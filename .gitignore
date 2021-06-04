@@ -2,3 +2,5 @@
 /outputdata/
 venv/
 outputdata/
+/eventlog/
+eventlog/
