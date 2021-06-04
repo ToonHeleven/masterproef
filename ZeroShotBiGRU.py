@@ -3,7 +3,6 @@ from torch import optim
 from data.dataloader import DatasetLoader
 from torch.utils.data import DataLoader
 import torch
-import numpy as np
 
 from tqdm import tqdm
 
