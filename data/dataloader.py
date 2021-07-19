@@ -43,7 +43,10 @@ class DatasetLoader(Dataset):
         self.eventlog = self.eventlog.reset_index(drop=True)
 
 
-class PretrainLoader(Dataset):
+""" Event Connection Graph wordt als DatasetLoader opgesteld """
+class EventConnectionGraph(Dataset):
+
+    """ Bij initialisatie wordt de event connection graph aangemaakt """
     def __init__(self, datapath: str, d: int, T: int, removeapps: list, nr_generated: int, nr_samples: int = None):
         if nr_samples is None:
             raise ValueError("Define nr_samples")
@@ -83,18 +86,22 @@ class PretrainLoader(Dataset):
                                where=self.graph.sum(axis=1) != 0,
                                out=np.full(shape=(self.nr_apps, self.nr_apps), fill_value=1/self.nr_apps)).T
 
+    """ Wat normaal de lengte is van de dataset in DatasetLoader is nu het gewenst aan gegenereerde samples """
     def __len__(self):
         return self.nr_generated
 
+    """ Specifieert wat de DataLoader als samples produceert, in dit geval een willekeurige app index en een opvolger obv. de graph"""
     def __getitem__(self, idx):
         prev_app_index = np.random.randint(0, self.nr_apps - 1)
         next_app_index = np.random.choice(self.nr_apps, p=self.graph[prev_app_index])
         return prev_app_index, next_app_index
 
+    """ Functie die de event log cleant """
     def clean(self, removeapps: iter):
         self.eventlog.loc[self.eventlog.Appname == "à®µà®°à¯ˆà®ªà®Ÿà®®à¯"] = "Tamil Nadu Village Map"
         self.eventlog = self.eventlog[~self.eventlog.Appname.isin(removeapps)]
         self.eventlog = self.eventlog.reset_index(drop=True)
 
+    """ private functie op de delta te berekenen in aanmaken van event connection graph """
     def __calcdelta(self, timediff):
         return math.exp((-timediff) / self.__d)

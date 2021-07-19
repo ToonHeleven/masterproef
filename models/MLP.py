@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 
-class PreTrainEmbedding(nn.Module):
+class MLP(nn.Module):
     def __init__(self, max_apps, src_dim=4):
         super().__init__()
         self.src_embedding = nn.Embedding(num_embeddings=max_apps, embedding_dim=src_dim)
@@ -9,6 +9,5 @@ class PreTrainEmbedding(nn.Module):
 
     def forward(self, x):
         x = self.src_embedding(x)
-        x = x.unsqueeze(0)
         x = self.fc1(x)
         return x
