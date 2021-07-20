@@ -92,7 +92,7 @@ class EventConnectionGraph(Dataset):
 
     """ Specifieert wat de DataLoader als samples produceert, in dit geval een willekeurige app index en een opvolger obv. de graph"""
     def __getitem__(self, idx):
-        prev_app_index = np.random.randint(0, self.nr_apps - 1)
+        prev_app_index = np.random.randint(0, self.nr_apps)
         next_app_index = np.random.choice(self.nr_apps, p=self.graph[prev_app_index])
         return prev_app_index, next_app_index
 
