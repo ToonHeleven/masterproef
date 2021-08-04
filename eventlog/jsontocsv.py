@@ -11,4 +11,6 @@ phone_usage_cleaned['Timestamp'] = phone_usage_cleaned['Timestamp'].dt.strftime(
 
 phone_usage_cleaned.to_csv(path_or_buf="phone_usage_cleaned3.csv")
 
-print(phone_usage_cleaned.head())
+test = phone_usage_cleaned.Appname.drop_duplicates().reset_index(drop=True)
+# print(test[220:240])
+# print(phone_usage_cleaned.head())
