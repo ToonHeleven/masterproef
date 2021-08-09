@@ -1,7 +1,6 @@
 import pandas as pd
 from torch.utils.data import Dataset
 import operator
-from torch.nn.functional import one_hot
 from torch import tensor
 import numpy as np
 import datetime
@@ -19,18 +18,32 @@ class DatasetLoader(Dataset):
         return len(self.eventlog)-self.padlength
 
     def __getitem__(self, idx):
+        # Check of app al een index heeft
         curr_app_name = self.eventlog.iloc[idx+self.padlength]
         curr_app_index = self.appindexdict.get(curr_app_name)
+
+        # Indien nee, zet index=len(self.appindexdict) en lees curr_app_index terug uit
         if curr_app_index == None:
+
+            # FIXME: lost probleem op waarbij de onderste 2 omgewisseld moeten worden voor embedded netwerken (indices matchen anders niet)
+
+            # éénmalig de geschiedenis van "padlength=20" applicaties ook al een app index geven
             if idx == 0:
                 for prev_app_name in self.eventlog.iloc[:idx+self.padlength]:
                     if (self.appindexdict.get(prev_app_name) == None):
                         self.appindexdict[prev_app_name] = len(self.appindexdict)
+
+            # Sla de appnamen ook op in aparte dict (appnaam -> index)
             curr_app_index = len(self.appindexdict)
             self.appindexdict[curr_app_name] = curr_app_index
+
+            # Update de appnamedict ook (index -> apnaam)
             self.appnamedict = dict(zip(self.appindexdict.values(), self.appindexdict.keys()))
+
+        # Geef label van sample mee als curr_app_index
         curr_app_index = tensor(curr_app_index)
 
+        # Zet app names om in hun indices en geef een geschiedenis van "padlength=20" applicatie indices terug
         prev_app_names = self.eventlog.iloc[idx:idx+self.padlength]
         appindexgetter = operator.itemgetter(*prev_app_names)
         prev_apps_indices = tensor(appindexgetter(self.appindexdict))
